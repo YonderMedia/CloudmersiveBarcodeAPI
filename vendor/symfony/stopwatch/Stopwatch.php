@@ -11,32 +11,34 @@
 
 namespace Symfony\Component\Stopwatch;
 
+use Symfony\Contracts\Service\ResetInterface;
+
+// Help opcache.preload discover always-needed symbols
+class_exists(Section::class);
+
 /**
  * Stopwatch provides a way to profile code.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Stopwatch
+class Stopwatch implements ResetInterface
 {
-    /**
-     * @var bool
-     */
-    private $morePrecision;
+    private bool $morePrecision;
 
     /**
      * @var Section[]
      */
-    private $sections;
+    private array $sections;
 
     /**
      * @var Section[]
      */
-    private $activeSections;
+    private array $activeSections;
 
     /**
      * @param bool $morePrecision If true, time is stored as float to keep the original microsecond precision
      */
-    public function __construct($morePrecision = false)
+    public function __construct(bool $morePrecision = false)
     {
         $this->morePrecision = $morePrecision;
         $this->reset();
@@ -45,7 +47,7 @@ class Stopwatch
     /**
      * @return Section[]
      */
-    public function getSections()
+    public function getSections(): array
     {
         return $this->sections;
     }
@@ -57,12 +59,12 @@ class Stopwatch
      *
      * @throws \LogicException When the section to re-open is not reachable
      */
-    public function openSection($id = null)
+    public function openSection(string $id = null)
     {
         $current = end($this->activeSections);
 
         if (null !== $id && null === $current->get($id)) {
-            throw new \LogicException(sprintf('The section "%s" has been started at an other level and can not be opened.', $id));
+            throw new \LogicException(sprintf('The section "%s" has been started at an other level and cannot be opened.', $id));
         }
 
         $this->start('__section__.child', 'section');
@@ -77,11 +79,9 @@ class Stopwatch
      *
      * @see getSectionEvents()
      *
-     * @param string $id The identifier of the section
-     *
      * @throws \LogicException When there's no started section to be stopped
      */
-    public function stopSection($id)
+    public function stopSection(string $id)
     {
         $this->stop('__section__');
 
@@ -95,61 +95,40 @@ class Stopwatch
 
     /**
      * Starts an event.
-     *
-     * @param string $name     The event name
-     * @param string $category The event category
-     *
-     * @return StopwatchEvent
      */
-    public function start($name, $category = null)
+    public function start(string $name, string $category = null): StopwatchEvent
     {
         return end($this->activeSections)->startEvent($name, $category);
     }
 
     /**
      * Checks if the event was started.
-     *
-     * @param string $name The event name
-     *
-     * @return bool
      */
-    public function isStarted($name)
+    public function isStarted(string $name): bool
     {
         return end($this->activeSections)->isEventStarted($name);
     }
 
     /**
      * Stops an event.
-     *
-     * @param string $name The event name
-     *
-     * @return StopwatchEvent
      */
-    public function stop($name)
+    public function stop(string $name): StopwatchEvent
     {
         return end($this->activeSections)->stopEvent($name);
     }
 
     /**
      * Stops then restarts an event.
-     *
-     * @param string $name The event name
-     *
-     * @return StopwatchEvent
      */
-    public function lap($name)
+    public function lap(string $name): StopwatchEvent
     {
         return end($this->activeSections)->stopEvent($name)->start();
     }
 
     /**
      * Returns a specific event by name.
-     *
-     * @param string $name The event name
-     *
-     * @return StopwatchEvent
      */
-    public function getEvent($name)
+    public function getEvent(string $name): StopwatchEvent
     {
         return end($this->activeSections)->getEvent($name);
     }
@@ -157,13 +136,11 @@ class Stopwatch
     /**
      * Gets all events for a given section.
      *
-     * @param string $id A section identifier
-     *
      * @return StopwatchEvent[]
      */
-    public function getSectionEvents($id)
+    public function getSectionEvents(string $id): array
     {
-        return isset($this->sections[$id]) ? $this->sections[$id]->getEvents() : array();
+        return isset($this->sections[$id]) ? $this->sections[$id]->getEvents() : [];
     }
 
     /**
@@ -171,6 +148,6 @@ class Stopwatch
      */
     public function reset()
     {
-        $this->sections = $this->activeSections = array('__root__' => new Section(null, $this->morePrecision));
+        $this->sections = $this->activeSections = ['__root__' => new Section(null, $this->morePrecision)];
     }
 }
