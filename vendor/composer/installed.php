@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
-        'name' => 'cloudmersive/cloudmersive_barcode_api_client',
-        'pretty_version' => '2.0.1',
-        'version' => '2.0.1.0',
+        'name' => 'yonder/cloudmersive_barcode_api_client',
+        'pretty_version' => '3.0.1',
+        'version' => '3.0.1.0',
         'reference' => NULL,
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
@@ -10,15 +10,6 @@
         'dev' => true,
     ),
     'versions' => array(
-        'cloudmersive/cloudmersive_barcode_api_client' => array(
-            'pretty_version' => '2.0.1',
-            'version' => '2.0.1.0',
-            'reference' => NULL,
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../../',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'composer/pcre' => array(
             'pretty_version' => '3.0.0',
             'version' => '3.0.0.0',
@@ -675,6 +666,15 @@
             'install_path' => __DIR__ . '/../webmozart/assert',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'yonder/cloudmersive_barcode_api_client' => array(
+            'pretty_version' => '3.0.1',
+            'version' => '3.0.1.0',
+            'reference' => NULL,
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
     ),
 );

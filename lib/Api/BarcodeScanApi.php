@@ -34,6 +34,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
+use GuzzleHttp\Utils;
 use Swagger\Client\ApiException;
 use Swagger\Client\Configuration;
 use Swagger\Client\HeaderSelector;
@@ -280,7 +281,7 @@ class BarcodeScanApi
         // form params
         if ($image_file !== null) {
             $multipart = true;
-            $formParams['imageFile'] = \GuzzleHttp\Psr7\try_fopen(ObjectSerializer::toFormValue($image_file), 'rb');
+            $formParams['imageFile'] = \GuzzleHttp\Psr7\Utils::tryFopen(ObjectSerializer::toFormValue($image_file), 'rb');
         }
         // body params
         $_tempBody = null;
@@ -321,7 +322,7 @@ class BarcodeScanApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -342,7 +343,7 @@ class BarcodeScanApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'POST',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
